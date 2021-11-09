@@ -18,7 +18,14 @@ def index(request: Request):
 
 @app.post('/start')
 def start(source:Source):
-    return {'result':'yay'}
+    
+        controller.start(source.source)
+        return {
+        "status" : "SUCCESS",
+        "data" : {
+                    "stream":'localhost:5000/video_feed'
+                  }
+    }
 
 @app.get('/video_feed')
 def video_feed():
