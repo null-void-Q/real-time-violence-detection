@@ -1,7 +1,7 @@
 from model.model import ViolenceModel
 from data.video_capture import VideoCapture
 from data.output_pipe import OutputPipe
-
+import uvicorn
 VID_SRC = './test_video.mp4'
 
 clip_size = 64
@@ -10,6 +10,9 @@ save_result = True
 
 confidence_threshold = 70
 memory = 3
+
+def serve():
+    uvicorn.run("interface.backend.server:app", host="0.0.0.0", port=5000, access_log=False)
 
 def main():
     
@@ -34,4 +37,4 @@ def main():
         
     
 if __name__ == '__main__':
-    main()
+    serve()

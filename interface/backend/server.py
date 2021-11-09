@@ -3,9 +3,12 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
+from interface.backend.controller import Controller
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
+controller = Controller()
 
 
 @app.get('/')
@@ -19,6 +22,3 @@ def start(source):
 @app.get('/video_feed')
 def video_feed():
     return StreamingResponse(None, media_type="multipart/x-mixed-replace;boundary=frame")
-
-if __name__ == '__main__':
-    uvicorn.run("server:app", host="0.0.0.0", port=5000, access_log=False)

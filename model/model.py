@@ -23,6 +23,8 @@ class ViolenceModel():
                                     ,withWeights= 'v_inception_i3d' , withTop= True)
         self.threshold = threshold/100
         self.memory = memory
+        self.clip_size = clip_size
+        
         self.prediction_buffer = deque([])
         
     def classify(self, clip):
