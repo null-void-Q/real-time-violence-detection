@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
-from interface.backend.controller import Controller
+from interface.backend.controller import Controller, Source
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -11,12 +11,13 @@ templates = Jinja2Templates(directory="templates")
 controller = Controller()
 
 
+
 @app.get('/')
 def index(request: Request):
     return templates.TemplateResponse("index.html", context={"request": request})
 
 @app.post('/start')
-def start(source):
+def start(source:Source):
     return {'result':'yay'}
 
 @app.get('/video_feed')

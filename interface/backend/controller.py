@@ -2,7 +2,7 @@ from model.model import ViolenceModel
 from data.video_capture import VideoCapture
 from data.output_pipe import OutputPipe
 import threading
-
+from pydantic import BaseModel
 
 
 class Controller():
@@ -38,3 +38,7 @@ class Controller():
             
 
         output_pipe.end()
+        
+
+class Source(BaseModel):
+    source: str    
