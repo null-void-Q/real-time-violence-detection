@@ -1,7 +1,6 @@
 import cv2
+import numpy as np
 from collections import deque
-import os
-from datetime import datetime
 from .utils import anotate_clip
 import threading
 
@@ -14,9 +13,8 @@ class OutputPipe():
         
         self.stop_flag = threading.Event()
         self.buffer_lock = threading.Lock()
-        self.stream = threading.Thread(target=OutputPipe.output_stream, args=(self.buffer,self.buffer_lock,self.stop_flag))
   
-
+        self.blank_frame = self.encode_frame(np.zeros((640,480)))
     
     def read_output(self, clip,label):
         clip = anotate_clip(clip,label)
@@ -25,22 +23,35 @@ class OutputPipe():
         self.labels.extend([label]*len(clip))
         
     
-    @staticmethod
-    def output_stream(buffer, buffer_lock, stop_flag):
+    
+    def output_stream(self):
+        last  = cv2.getTickCount()
+        current  = cv2.getTickCount()    
+        while(not self.stop_flag.is_set()):
+            current = cv2.getTickCount()
+            frame_time = (current - last)/ cv2.getTickFrequency()
+            if len(self.buffer) and frame_time > 0.03:# 30 fps
+                last= cv2.getTickCount()
+                with self.buffer_lock:                
+                    frame = self.encode_frame(self.buffer.popleft())
+                yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n') 
+        # flush remaining frames
+        while(len(self.buffer)):
+            current = cv2.getTickCount()
+            frame_time = (current - last)/ cv2.getTickFrequency()  
+            if frame_time > 0.03:# 30 fps
+                last= cv2.getTickCount()     
+                frame = self.encode_frame(self.buffer.popleft())
+                yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')        
 
-        out = cv2.VideoWriter(OutputPipe.get_record_path(),cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (640,480))# 30.0 fps
-        while(not stop_flag.is_set()):
-            if len(buffer):
-                with buffer_lock:                
-                    frame = buffer.popleft()
-                frame = cv2.resize(frame,(640,480))
-                out.write(frame)
-        # flush latest remaining frames
-        while(len(buffer)):       
-            frame = buffer.popleft()
-            frame = cv2.resize(frame,(640,480))
-            out.write(frame)         
-        out.release()
+        
+    def encode_frame(self,frame):
+        frame = cv2.resize(frame,(640,480))      
+        ret, buf = cv2.imencode('.jpg', frame)
+        frame = buf.tobytes()
+        return frame
     
     def start_stream(self):
         self.stream.daemon = True
@@ -48,14 +59,3 @@ class OutputPipe():
         
     def end(self):
         self.stop_flag.set()
-        self.stream.join(5.0)
-        exit(0)
-    
-    @staticmethod    
-    def get_record_path(storeDirectory = './recorded_clips/'):
-        if not os.path.exists(storeDirectory):
-            os.makedirs(storeDirectory)
-        now = datetime.now()
-        dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
-        clip_name = 'PV_'+dt_string+'.mp4'
-        return storeDirectory+'/'+clip_name        

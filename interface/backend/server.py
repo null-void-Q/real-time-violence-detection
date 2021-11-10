@@ -29,4 +29,4 @@ def start(source:Source):
 
 @app.get('/video_feed')
 def video_feed():
-    return StreamingResponse(None, media_type="multipart/x-mixed-replace;boundary=frame")
+    return StreamingResponse(controller.stream(), media_type="multipart/x-mixed-replace;boundary=frame")
