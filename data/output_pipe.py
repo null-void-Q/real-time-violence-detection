@@ -14,7 +14,7 @@ class OutputPipe():
         self.stop_flag = threading.Event()
         self.buffer_lock = threading.Lock()
   
-        self.blank_frame = self.encode_frame(np.zeros((640,480)))
+        self.blank_frame = self.encode_frame(np.zeros((1280,720)))
     
     def read_output(self, clip,label):
         clip = anotate_clip(clip,label)
@@ -45,10 +45,12 @@ class OutputPipe():
                 frame = self.encode_frame(self.buffer.popleft())
                 yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')        
-
+        
+        yield (b'--frame\r\n'
+                 b'Content-Type: image/jpeg\r\n\r\n' + self.encode_frame(self.blank_frame ) + b'\r\n') 
         
     def encode_frame(self,frame):
-        frame = cv2.resize(frame,(640,480))      
+        frame = cv2.resize(frame,(1280,720))      
         ret, buf = cv2.imencode('.jpg', frame)
         frame = buf.tobytes()
         return frame

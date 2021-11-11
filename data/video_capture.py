@@ -4,7 +4,7 @@ class VideoCapture():
     
     def __init__(self, video_src):
         
-        self.cap = VideoCapture.start_cap(video_src)
+        self.cap = VideoCapture.start_cap(video_src or 0)
     
     def isPlaying(self):
         return self.cap.isOpened()
