@@ -47,7 +47,7 @@ class OutputPipe():
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')        
         
         yield (b'--frame\r\n'
-                 b'Content-Type: image/jpeg\r\n\r\n' + self.encode_frame(self.blank_frame ) + b'\r\n') 
+                 b'Content-Type: image/jpeg\r\n\r\n' + self.blank_frame  + b'\r\n') 
         
     def encode_frame(self,frame):
         frame = cv2.resize(frame,(1280,720))      

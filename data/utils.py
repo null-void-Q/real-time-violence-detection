@@ -67,3 +67,29 @@ def write_label(frame, prediction):
     #         value=[*borderColor])
             
     return frame
+
+
+class PreformanceTimer():
+    def __init__(self) -> None:
+        self.previous = 0
+        self.current = 0
+        self.lastRecord = 0
+        self.records = []
+        
+    def record(self):
+        self.current = cv2.getTickCount()
+        if self.previous:  
+            self.lastRecord = (self.current - self.previous)/ cv2.getTickFrequency()  
+            self.records.append(self.lastRecord) 
+        self.previous = self.current
+    
+    def averageTime(self):
+        return sum(self.records)/len(self.records)
+    
+    def framerate(self,numOfFrames):
+        if not len(self.records):
+            return 0
+        return ( numOfFrames/self.averageTime() )
+        
+        
+         

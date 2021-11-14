@@ -73,7 +73,7 @@ class ViolenceModel():
             model = Model(model.input, predictions)
 
         #model._make_predict_function()
-        data = np.random.rand(1,64,224,224,3)
+        data = np.random.rand(1,inputFrames,224,224,3)
         model.predict(data)
             
         return model
