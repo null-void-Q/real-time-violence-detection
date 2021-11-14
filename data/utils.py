@@ -85,11 +85,27 @@ class PreformanceTimer():
     
     def averageTime(self):
         return sum(self.records)/len(self.records)
-    
+    def timePerFrame(self,numOfFrames):
+        return ( self.averageTime() / numOfFrames )
     def framerate(self,numOfFrames):
         if not len(self.records):
             return 0
         return ( numOfFrames/self.averageTime() )
+    
+    def calculateDelay(self,outputSPF ,numOfFrames):
+        #average time to read and classify clip - average time to output/stream clip
+        delayPerClip = self.averageTime() - outputSPF*numOfFrames
+        timePassed = self.timeFromStarting()  
+        delay = (delayPerClip-timePassed) if (delayPerClip > timePassed ) else 0
+        return delay 
+    
+    def setStartingTime(self):
+        self.startingTime = cv2.getTickCount()
         
+    def timeFromStarting(self):
+        return (cv2.getTickCount() - self.startingTime) / cv2.getTickFrequency() 
+    
+    def hasRecords(self, n=2):
+        return len(self.records) == n    
         
          

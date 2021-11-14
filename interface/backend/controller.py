@@ -14,10 +14,11 @@ class Controller():
         self.model = ViolenceModel(clip_size=clip_size, memory=memory, threshold=confidence_threshold)
         self.output_pipe = None
         self.video_capture = None
+        self.preformanceTimer = None
         
         self.processing_loop = None
         
-        self.preformanceTimer = PreformanceTimer()
+        
 
         
   
@@ -27,6 +28,7 @@ class Controller():
         
         self.video_capture = VideoCapture(video_src=source)
         self.output_pipe = OutputPipe()
+        self.preformanceTimer = PreformanceTimer()
         
         self.processing_loop = threading.Thread(target=Controller.processing_loop, args=(self.model,
                                                                                          self.video_capture,
@@ -37,6 +39,8 @@ class Controller():
         
     @staticmethod            
     def processing_loop(model, video_capture, output_pipe, preformanceTimer):
+        
+        preformanceTimer.setStartingTime()
         while(video_capture.isPlaying()):
 
             clip = video_capture.read_clip(model.clip_size)
@@ -46,6 +50,13 @@ class Controller():
             preformanceTimer.record()
             
             output_pipe.read_output(clip,label)
+            
+            #calculate required delay before streaming / depends on machine preformance
+            if(preformanceTimer.hasRecords()):# record 2 classifications before calculating delay
+                delay = preformanceTimer.calculateDelay(output_pipe.spf, model.clip_size)
+                
+                # start streaming classified frames
+                output_pipe.start_after_delay(delay)    
 
         output_pipe.end()
         
