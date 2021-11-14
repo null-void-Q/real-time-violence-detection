@@ -32,11 +32,8 @@ def start(source:Source):
     
         controller.start(source.source)
         return {
-        "status" : "SUCCESS",
-        "data" : {
                     "stream":'http://localhost:5000/video_feed'
                   }
-    }
 
 @app.get('/video_feed')
 def video_feed():
