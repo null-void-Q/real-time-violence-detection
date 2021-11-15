@@ -41,11 +41,12 @@ class OutputPipe():
                 current = cv2.getTickCount()
                 time_since_last_frame = (current - prev)/ cv2.getTickFrequency()  
                 if time_since_last_frame >= self.spf:
-                    prev = cv2.getTickCount()     
-                    frame = self.encode_frame(self.buffer.popleft())
-                    
-                    yield (b'--frame\r\n'
-                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')      
+                    prev = cv2.getTickCount()
+                    with self.buffer_lock:     
+                        frame = self.encode_frame(self.buffer.popleft())
+                        
+                        yield (b'--frame\r\n'
+                            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')      
   
         # return black frame when done
         yield (b'--frame\r\n'

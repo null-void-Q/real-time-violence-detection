@@ -34,7 +34,13 @@ def start(config:StartUpConfig):
         return {
                     "stream":'http://localhost:5000/video_feed'
                   }
-
+@app.get('/end')
+def end():
+        controller.end()
+        return {
+            "STATUS":True
+                }
+    
 @app.get('/video_feed')
 def video_feed():
     return StreamingResponse(controller.stream(), media_type="multipart/x-mixed-replace;boundary=frame")

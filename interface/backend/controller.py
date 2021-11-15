@@ -17,7 +17,7 @@ class Controller():
         self.preformanceTimer = None
         
         self.processing_loop = None
-        
+        self.stop_flag = None
         
 
         
@@ -31,21 +31,23 @@ class Controller():
         self.output_pipe = OutputPipe()
         self.preformanceTimer = PreformanceTimer()
         
+        self.stop_flag = threading.Event()
         self.processing_loop = threading.Thread(target=Controller.processing_loop, args=(self.model,
                                                                                          self.video_capture,
                                                                                          self.output_pipe,
-                                                                                         self.preformanceTimer))
+                                                                                         self.preformanceTimer,
+                                                                                         self.stop_flag))
         self.processing_loop.daemon = True
         self.processing_loop.start()
         
     @staticmethod            
-    def processing_loop(model, video_capture, output_pipe, preformanceTimer):
+    def processing_loop(model, video_capture, output_pipe, preformanceTimer,stop_flag):
         
         preformanceTimer.setStartingTime()
-        while(video_capture.isPlaying()):
+        while(video_capture.isPlaying() and not stop_flag.is_set()):
 
             clip = video_capture.read_clip(model.clip_size)
-    
+            
             label = model.classify(clip)
             
             preformanceTimer.record()
@@ -60,6 +62,9 @@ class Controller():
                 output_pipe.start_after_delay(delay)    
 
         output_pipe.end()
+    
+    def end(self):
+        self.stop_flag.set()
         
     def stream(self):
         return self.output_pipe.output_stream()
