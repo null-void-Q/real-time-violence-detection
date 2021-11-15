@@ -50,6 +50,8 @@ class ViolenceModel():
         
         if self.clip_size != config.clip_size:
             self.clip_size = config.clip_size
+            self.model = None
+            K.clear_session()
             self.model = ViolenceModel.loadModel(numberOfClasses = len(labels), inputFrames = self.clip_size,frameDims= self.frame_dims
                                     ,withWeights= 'v_inception_i3d' , withTop= True)
         
