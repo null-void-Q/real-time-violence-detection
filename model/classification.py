@@ -26,8 +26,12 @@ def calculate_prediction(predictions, class_map, threshold):
     
     top1indices = getTopNindecies(final_prediction,1)
     index = top1indices[0]
+    
+    #thresholding
     if index and final_prediction[index] < threshold:
         index = 0
+    if not index and ((1-final_prediction[index]) > threshold):
+        index = 1
     
     result =  {'label': class_map[index], 'score':round(final_prediction[index]*100,2)} 
     
