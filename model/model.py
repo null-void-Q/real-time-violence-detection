@@ -52,7 +52,7 @@ class ViolenceModel():
             self.clip_size = config.clip_size
             self.model = ViolenceModel.loadModel(numberOfClasses = len(labels), inputFrames = self.clip_size,frameDims= self.frame_dims
                                     ,withWeights= 'v_inception_i3d' , withTop= True)
-        print(config, self.threshold, self.memory, self.clip_size)
+        
     @staticmethod
     def loadModel(numberOfClasses,inputFrames, frameDims,withWeights = None , withTop = False):
 
