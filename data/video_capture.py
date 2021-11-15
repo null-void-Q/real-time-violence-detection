@@ -19,11 +19,11 @@ class VideoCapture():
             else:
                 self.cap.release()
                 break
-        
+
         #loop clip if not enough frames    
         if len(clip) < clip_size:
             clip.extend(clip[: clip_size - len(clip) ])
-                 
+                   
         return clip        
     
     @staticmethod

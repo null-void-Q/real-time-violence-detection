@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
-from interface.backend.controller import Controller, Source
+from interface.backend.controller import Controller, StartUpConfig
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -28,9 +28,9 @@ def index(request: Request):
     return templates.TemplateResponse("index.html", context={"request": request})
 
 @app.post('/start')
-def start(source:Source):
+def start(config:StartUpConfig):
     
-        controller.start(source.source)
+        controller.start(config)
         return {
                     "stream":'http://localhost:5000/video_feed'
                   }

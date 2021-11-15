@@ -21,9 +21,12 @@ class ViolenceModel():
         
         self.model = ViolenceModel.loadModel(numberOfClasses = len(labels), inputFrames = clip_size,frameDims= frame_dims
                                     ,withWeights= 'v_inception_i3d' , withTop= True)
+        
+        self.frame_dims = frame_dims
         self.threshold = threshold/100
         self.memory = memory
         self.clip_size = clip_size
+        
         
         self.prediction_buffer = deque([])
         
@@ -40,7 +43,16 @@ class ViolenceModel():
             
         self.prediction_buffer.append(prediction)
 
+    def update(self,config):
         
+        self.threshold = config.threshold/100
+        self.memory = config.memory
+        
+        if self.clip_size != config.clip_size:
+            self.clip_size = config.clip_size
+            self.model = ViolenceModel.loadModel(numberOfClasses = len(labels), inputFrames = self.clip_size,frameDims= self.frame_dims
+                                    ,withWeights= 'v_inception_i3d' , withTop= True)
+        print(config, self.threshold, self.memory, self.clip_size)
     @staticmethod
     def loadModel(numberOfClasses,inputFrames, frameDims,withWeights = None , withTop = False):
 

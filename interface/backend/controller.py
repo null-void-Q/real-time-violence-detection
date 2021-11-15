@@ -24,9 +24,10 @@ class Controller():
   
 
 
-    def start(self, source):
+    def start(self, config):
         
-        self.video_capture = VideoCapture(video_src=source)
+        self.model.update(config.modelConfig)
+        self.video_capture = VideoCapture(video_src=config.source)
         self.output_pipe = OutputPipe()
         self.preformanceTimer = PreformanceTimer()
         
@@ -63,5 +64,11 @@ class Controller():
     def stream(self):
         return self.output_pipe.output_stream()
     
-class Source(BaseModel):
-    source: str    
+class ModelConfig(BaseModel):
+    clip_size:int
+    memory:int
+    threshold:int
+        
+class StartUpConfig(BaseModel):
+    source: str
+    modelConfig: ModelConfig   
