@@ -2,14 +2,14 @@ import cv2
 import numpy as np
 import time
 from collections import deque
-from .utils import anotate_clip
+from .utils import write_label
 import threading
 
 class OutputPipe():
     def __init__(self, fps = 30):
         
         self.buffer = deque([])
-        self.labels = []
+        self.labels = deque([])
         
         self.fps = fps
         self.spf = 1/fps
@@ -19,10 +19,9 @@ class OutputPipe():
         self.buffer_lock = threading.Lock()
     
     def read_output(self, clip,label):
-        clip = anotate_clip(clip,label)
         with self.buffer_lock:
             self.buffer.extend(clip)
-        self.labels.extend([label]*len(clip))
+            self.labels.extend([label]*len(clip))
         
     
     
@@ -43,17 +42,24 @@ class OutputPipe():
                 if time_since_last_frame >= self.spf:
                     prev = cv2.getTickCount()
                     with self.buffer_lock:     
-                        frame = self.encode_frame(self.buffer.popleft())
+                        frame = self.buffer.popleft()
+                        label = self.labels.popleft()
                         
-                        yield (b'--frame\r\n'
+                    frame = self.prepare_frame(frame,label)
+                    frame = self.encode_frame(frame)
+                    yield (b'--frame\r\n'
                             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')      
   
         # return black frame when done
-        yield (b'--frame\r\n'
-                 b'Content-Type: image/jpeg\r\n\r\n' + self.encode_frame(np.zeros((1280,720)))  + b'\r\n') 
-        
-    def encode_frame(self,frame):
-        frame = cv2.resize(frame,(1280,720))      
+        # yield (b'--frame\r\n'
+        #          b'Content-Type: image/jpeg\r\n\r\n' + self.encode_frame(np.zeros((720,1280)))  + b'\r\n') 
+    
+    def prepare_frame(self,frame,label):
+        frame = cv2.resize(frame,(1280,720))
+        frame = write_label(frame,label)
+        return frame   
+            
+    def encode_frame(self,frame):   
         ret, buf = cv2.imencode('.jpg', frame)
         frame = buf.tobytes()
         return frame

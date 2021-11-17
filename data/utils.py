@@ -1,19 +1,7 @@
 import cv2
 import os
+import numpy as np
 from datetime import datetime
-
-def store_clip(clip, storeDirectory = './recorded_clips/'):
-
-    if not os.path.exists(storeDirectory):
-        os.makedirs(storeDirectory)
-    now = datetime.now()
-    dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
-    clip_name = 'PV_'+dt_string+'.mp4'
-    out = cv2.VideoWriter(storeDirectory+'/'+clip_name,cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (640,480))# 30.0 fps
-    for frame in clip:
-        frame = cv2.resize(frame,(640,480))
-        out.write(frame) 
-    out.release()
 
 def anotate_clip(clip,label):
     out_clip = []
@@ -23,49 +11,51 @@ def anotate_clip(clip,label):
 
 def write_label(frame, prediction):
     
-
-    text_location = (500,740)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 1
-    font_color =(0, 192, 7)
-
-    lineType               = 2
-    bordersize             = 30
-    borderColor            = (0, 0, 0)
-
-
-    label = prediction
-
+    height,width = frame.shape[0], frame.shape[1]
+    midX = width//2
     
+    borderColor = (69,209,14)
+    
+    if prediction['label'].lower() == 'violence':
+        borderColor =  (36,28,236)  
+
+    #### Bottom Border  ####
     frame = cv2.copyMakeBorder(frame,
         top=0,
-        bottom=bordersize,
+        bottom=10,
         left=0,
         right=0,
         borderType=cv2.BORDER_CONSTANT,
         value=[*borderColor])
     
-            
-    cv2.putText(frame,label['label']+' '+str(label['score']), 
-        text_location, 
-        font, 
-        font_scale,
-        font_color,
-        lineType,)
-    
-    # timestamp = datetime.datetime.now()
-    # cv2.putText(frame, timestamp.strftime(
-	# 		"%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10),
-	# 		cv2.FONT_HERSHEY_SIMPLEX, 0.65, (32, 64, 255),1)
+    ####   polygon   ####
+    vrx = np.array((
+                    [(midX-120),height],
+                    [(midX-100),(height-20)],
+                    [(midX+100),(height-20)],
+                    [(midX+120),height]),
+                   np.int32)
+    vrx = vrx.reshape((-1,1,2))
+    frame = cv2.polylines(frame, [vrx], False, (0,0,0),2)
+    cv2.fillPoly(frame, pts = [vrx], color =borderColor)
+    ###############################
 
-    # frame = cv2.copyMakeBorder(frame,
-    #         top=bordersize,
-    #         bottom=bordersize,
-    #         left=bordersize,
-    #         right=bordersize,
-    #         borderType=cv2.BORDER_CONSTANT,
-    #         value=[*borderColor])
-            
+    ####   TEXT    ####
+    text_location = (midX-80,height)
+    font = cv2.FONT_HERSHEY_COMPLEX
+    font_scale = 0.6
+    font_color =(255, 255, 255)
+    lineType= 1
+    outText = prediction['label']+' '+str(prediction['score'])+'%'
+    cv2.putText(frame,
+                outText, 
+                text_location, 
+                font, 
+                font_scale,
+                font_color,
+                lineType,)
+    ##############################
+    
     return frame
 
 
@@ -108,4 +98,19 @@ class PreformanceTimer():
     def hasRecords(self, n=2):
         return len(self.records) == n    
         
+
+
+
+def store_clip(clip, storeDirectory = './recorded_clips/'):
+
+    if not os.path.exists(storeDirectory):
+        os.makedirs(storeDirectory)
+    now = datetime.now()
+    dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
+    clip_name = 'PV_'+dt_string+'.mp4'
+    out = cv2.VideoWriter(storeDirectory+'/'+clip_name,cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (640,480))# 30.0 fps
+    for frame in clip:
+        frame = cv2.resize(frame,(640,480))
+        out.write(frame) 
+    out.release()
          
