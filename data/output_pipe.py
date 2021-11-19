@@ -41,9 +41,12 @@ class OutputPipe():
                 time_since_last_frame = (current - prev)/ cv2.getTickFrequency()  
                 if time_since_last_frame >= self.spf:
                     prev = cv2.getTickCount()
-                    with self.buffer_lock:     
+                    self.buffer_lock.acquire(blocking=False)
+                    try:
                         frame = self.buffer.popleft()
                         label = self.labels.popleft()
+                    finally:
+                        self.buffer_lock.release()    
                         
                     frame = self.prepare_frame(frame,label)
                     frame = self.encode_frame(frame)
@@ -51,8 +54,8 @@ class OutputPipe():
                             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')      
   
         # return black frame when done
-        # yield (b'--frame\r\n'
-        #          b'Content-Type: image/jpeg\r\n\r\n' + self.encode_frame(np.zeros((720,1280)))  + b'\r\n') 
+        yield (b'--frame\r\n'
+                 b'Content-Type: image/jpeg\r\n\r\n' + self.encode_frame(np.zeros((720,1280)))  + b'\r\n') 
     
     def prepare_frame(self,frame,label):
         frame = cv2.resize(frame,(1280,720))

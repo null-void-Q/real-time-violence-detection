@@ -43,7 +43,7 @@ def write_label(frame, prediction):
     ####   TEXT    ####
     text_location = (midX-80,height)
     font = cv2.FONT_HERSHEY_COMPLEX
-    font_scale = 0.6
+    font_scale = 0.5
     font_color =(255, 255, 255)
     lineType= 1
     outText = prediction['label']+' '+str(prediction['score'])+'%'
@@ -97,7 +97,6 @@ class PreformanceTimer():
     
     def hasRecords(self, n=2):
         return len(self.records) == n    
-        
 
 
 

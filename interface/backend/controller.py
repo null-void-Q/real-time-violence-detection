@@ -27,25 +27,29 @@ class Controller():
     def start(self, config):
         
         self.model.update(config.modelConfig)
-        self.video_capture = VideoCapture(video_src=config.source)
         self.output_pipe = OutputPipe()
         self.preformanceTimer = PreformanceTimer()
+        
+        self.video_capture = VideoCapture(video_src=config.source)
+        self.video_capture.start_capture_thread()
         
         self.stop_flag = threading.Event()
         self.processing_loop = threading.Thread(target=Controller.processing_loop, args=(self.model,
                                                                                          self.video_capture,
                                                                                          self.output_pipe,
                                                                                          self.preformanceTimer,
-                                                                                         self.stop_flag))
+                                                                                       self.stop_flag))
+          
         self.processing_loop.daemon = True
         self.processing_loop.start()
+        
         
     @staticmethod            
     def processing_loop(model, video_capture, output_pipe, preformanceTimer,stop_flag):
         
         preformanceTimer.setStartingTime()
-        while(video_capture.isPlaying() and not stop_flag.is_set()):
-
+        while(video_capture.isFlowing() and not stop_flag.is_set()):
+            
             clip = video_capture.read_clip(model.clip_size)
             
             label = model.classify(clip)
@@ -60,7 +64,8 @@ class Controller():
                 
                 # start streaming classified frames
                 output_pipe.start_after_delay(delay)    
-
+        
+        video_capture.end_capture_thread()
         output_pipe.end()
     
     def end(self):
