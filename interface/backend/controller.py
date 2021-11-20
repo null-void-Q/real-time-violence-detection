@@ -32,8 +32,11 @@ class Controller():
         self.end()
         
         self.model.update(config.modelConfig)
+        
         self.output_pipe = OutputPipe()
+        
         self.preformanceTimer = PreformanceTimer()
+        self.streaming_delay = -1
         
         self.video_capture = VideoCapture(video_src=config.source)
         self.video_capture.start_capture_thread()
@@ -61,10 +64,10 @@ class Controller():
             
             #calculate required delay before streaming / depends on machine preformance
             if(self.preformanceTimer.hasRecords()):# record 2 classifications before calculating delay
-                delay = self.preformanceTimer.calculateDelay(self.output_pipe.spf, self.model.clip_size)
+                self.streaming_delay = self.preformanceTimer.calculateDelay(self.output_pipe.spf, self.model.clip_size)
                 
                 # start streaming classified frames
-                self.output_pipe.start_after_delay(delay)    
+                self.output_pipe.start_after_delay(self.streaming_delay)    
         
         self.output_pipe.end()
         self.video_capture.end_capture_thread()

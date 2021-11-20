@@ -40,7 +40,12 @@ def end():
         return {
             "STATUS":True
                 }
-    
+@app.get('/delay')
+def delay():
+        return {
+                "delay":controller.streaming_delay
+                }
+            
 @app.get('/video_feed')
 def video_feed():
     return StreamingResponse(controller.stream(), media_type="multipart/x-mixed-replace;boundary=frame")
