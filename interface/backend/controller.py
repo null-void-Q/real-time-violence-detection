@@ -14,9 +14,11 @@ class Controller():
         self.model = ViolenceModel(clip_size=clip_size, memory=memory, threshold=confidence_threshold)
         self.output_pipe = None
         self.video_capture = None
-        self.preformanceTimer = None
         
-        self.processing_loop = None
+        self.preformanceTimer = None
+        self.streaming_delay = -1
+        
+        self.processing_thread = None
         self.stop_flag = None
         
 
@@ -34,39 +36,35 @@ class Controller():
         self.video_capture.start_capture_thread()
         
         self.stop_flag = threading.Event()
-        self.processing_loop = threading.Thread(target=Controller.processing_loop, args=(self.model,
-                                                                                         self.video_capture,
-                                                                                         self.output_pipe,
-                                                                                         self.preformanceTimer,
-                                                                                       self.stop_flag))
+        self.processing_thread = threading.Thread(target=self.processing_loop)
           
-        self.processing_loop.daemon = True
-        self.processing_loop.start()
+        self.processing_thread.daemon = True
+        self.processing_thread.start()
         
         
-    @staticmethod            
-    def processing_loop(model, video_capture, output_pipe, preformanceTimer,stop_flag):
+     
+    def processing_loop(self):
         
-        preformanceTimer.setStartingTime()
-        while(video_capture.isFlowing() and not stop_flag.is_set()):
+        self.preformanceTimer.setStartingTime()
+        while(self.video_capture.isFlowing() and not self.stop_flag.is_set()):
             
-            clip = video_capture.read_clip(model.clip_size)
+            clip = self.video_capture.read_clip(self.model.clip_size)
             
-            label = model.classify(clip)
+            label = self.model.classify(clip)
             
-            preformanceTimer.record()
+            self.preformanceTimer.record()
             
-            output_pipe.read_output(clip,label)
+            self.output_pipe.read_output(clip,label)
             
             #calculate required delay before streaming / depends on machine preformance
-            if(preformanceTimer.hasRecords()):# record 2 classifications before calculating delay
-                delay = preformanceTimer.calculateDelay(output_pipe.spf, model.clip_size)
+            if(self.preformanceTimer.hasRecords()):# record 2 classifications before calculating delay
+                delay = self.preformanceTimer.calculateDelay(self.output_pipe.spf, self.model.clip_size)
                 
                 # start streaming classified frames
-                output_pipe.start_after_delay(delay)    
+                self.output_pipe.start_after_delay(delay)    
         
-        video_capture.end_capture_thread()
-        output_pipe.end()
+        self.video_capture.end_capture_thread()
+        self.output_pipe.end()
     
     def end(self):
         self.stop_flag.set()

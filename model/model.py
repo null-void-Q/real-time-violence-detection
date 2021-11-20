@@ -47,6 +47,7 @@ class ViolenceModel():
         
         self.threshold = config.threshold/100
         self.memory = config.memory
+        self.prediction_buffer = deque([])
         
         if self.clip_size != config.clip_size:
             self.clip_size = config.clip_size
