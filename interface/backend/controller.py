@@ -28,6 +28,9 @@ class Controller():
 
     def start(self, config):
         
+        #wait for previous process to end
+        self.end()
+        
         self.model.update(config.modelConfig)
         self.output_pipe = OutputPipe()
         self.preformanceTimer = PreformanceTimer()
@@ -63,11 +66,16 @@ class Controller():
                 # start streaming classified frames
                 self.output_pipe.start_after_delay(delay)    
         
-        self.video_capture.end_capture_thread()
         self.output_pipe.end()
+        self.video_capture.end_capture_thread()
+        
     
     def end(self):
-        self.stop_flag.set()
+        if(self.stop_flag):
+            self.stop_flag.set()
+            self.output_pipe.terminate()
+            self.processing_thread.join()
+            
         
     def stream(self):
         return self.output_pipe.output_stream()

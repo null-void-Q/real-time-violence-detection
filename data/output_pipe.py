@@ -16,6 +16,8 @@ class OutputPipe():
         
         self.stop_flag = threading.Event()
         self.start_flag = threading.Event()
+        self.terminate_flag = threading.Event()
+        
         self.buffer_lock = threading.Lock()
     
     def read_output(self, clip,label):
@@ -32,11 +34,11 @@ class OutputPipe():
         current  = 0
         
         #wait until there is frames to stream
-        while(not self.start_flag.is_set()): pass
+        while(not self.start_flag.is_set() and not self.terminate_flag.is_set()): pass
         
         #main output loop   
-        while(not self.stop_flag.is_set() or len(self.buffer)):
-            while(len(self.buffer)):
+        while((not self.stop_flag.is_set() or len(self.buffer)) and not self.terminate_flag.is_set()):
+            while(len(self.buffer) and not self.terminate_flag.is_set()):
                 current = cv2.getTickCount()
                 time_since_last_frame = (current - prev)/ cv2.getTickFrequency()  
                 if time_since_last_frame >= self.spf:
@@ -73,7 +75,10 @@ class OutputPipe():
         
     def end(self):
         self.stop_flag.set()
-    
+        
+    def terminate(self):
+        self.terminate_flag.set()
+        
     def start_after_delay(self,delay):
         time.sleep(delay)
         self.start()    
