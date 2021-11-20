@@ -80,5 +80,12 @@ class OutputPipe():
         self.terminate_flag.set()
         
     def start_after_delay(self,delay):
-        time.sleep(delay)
-        self.start()    
+        
+        def delayed_start(delay,self):
+            time.sleep(delay)
+            self.start()   
+        
+        delay_thread = threading.Thread(target=delayed_start,args=(delay,self))          
+        delay_thread.daemon = True
+        delay_thread.start()
+ 
