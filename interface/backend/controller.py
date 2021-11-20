@@ -9,9 +9,9 @@ from pydantic import BaseModel
 class Controller():
     
     
-    def __init__(self, clip_size=64, confidence_threshold=70, memory=3):
+    def __init__(self):
         
-        self.model = ViolenceModel(clip_size=clip_size, memory=memory, threshold=confidence_threshold)
+        self.model = ViolenceModel(clip_size=64, memory=3, threshold=70)
         self.output_pipe = None
         self.video_capture = None
         
@@ -79,7 +79,13 @@ class Controller():
             self.output_pipe.terminate()
             self.processing_thread.join()
             
-        
+    def getModelConfig(self):
+        return {
+            "threshold":self.model.threshold,
+            "clip_size":self.model.clip_size,
+            "memory":self.model.memory
+        } 
+           
     def stream(self):
         return self.output_pipe.output_stream()
     

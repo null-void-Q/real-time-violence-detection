@@ -40,6 +40,11 @@ def end():
         return {
             "STATUS":True
                 }
+
+@app.get('/config')
+def modelConfig():
+        return controller.getModelConfig()
+        
 @app.get('/delay')
 def delay():
         return {
