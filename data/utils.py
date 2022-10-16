@@ -41,11 +41,11 @@ def write_label(frame, prediction):
     ###############################
 
     ####   TEXT    ####
-    text_location = (midX-80,height)
-    font = cv2.FONT_HERSHEY_COMPLEX
-    font_scale = 0.5
+    text_location = (midX-90,height)
+    font = cv2.FONT_HERSHEY_DUPLEX
+    font_scale = 0.6
     font_color =(255, 255, 255)
-    lineType= 1
+    lineType= 2
     outText = prediction['label']+' '+str(prediction['score'])+'%'
     cv2.putText(frame,
                 outText, 

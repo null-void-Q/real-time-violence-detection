@@ -4,7 +4,7 @@ from data.output_pipe import OutputPipe
 from data.utils import PreformanceTimer
 import threading
 from pydantic import BaseModel
-
+import os
 
 class Controller():
     
@@ -17,6 +17,7 @@ class Controller():
         
         self.preformanceTimer = None
         self.streaming_delay = -1
+        self.frame_rate = 0
         
         self.processing_thread = None
         self.stop_flag = None
@@ -37,6 +38,7 @@ class Controller():
         
         self.preformanceTimer = PreformanceTimer()
         self.streaming_delay = -1
+        self.frame_rate = 0
         
         self.video_capture = VideoCapture(video_src=config.source)
         self.video_capture.start_capture_thread()
@@ -62,6 +64,8 @@ class Controller():
             
             self.output_pipe.read_output(clip,label)
             
+            self.frame_rate = self.preformanceTimer.framerate(self.model.clip_size)
+            
             #calculate required delay before streaming / depends on machine preformance
             if(self.preformanceTimer.hasRecords()):# record 2 classifications before calculating delay
                 self.streaming_delay = self.preformanceTimer.calculateDelay(self.output_pipe.spf, self.model.clip_size)
@@ -71,6 +75,7 @@ class Controller():
         
         self.output_pipe.end()
         self.video_capture.end_capture_thread()
+        self.delTmpVideo()
         
     
     def end(self):
@@ -78,6 +83,7 @@ class Controller():
             self.stop_flag.set()
             self.output_pipe.terminate()
             self.processing_thread.join()
+            
             
     def getModelConfig(self):
         return {
@@ -87,8 +93,12 @@ class Controller():
         } 
            
     def stream(self):
-        return self.output_pipe.output_stream()
+        return self.output_pipe.output_stream()     
     
+    def delTmpVideo(self):
+        if os.path.exists("tmp.mp4"):
+            os.remove("tmp.mp4")
+            
 class ModelConfig(BaseModel):
     clip_size:int
     memory:int

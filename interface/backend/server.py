@@ -1,23 +1,25 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import StreamingResponse
-from fastapi.templating import Jinja2Templates
 from fastapi import Request
-from interface.backend.controller import Controller, StartUpConfig
+from interface.backend.controller import Controller, ModelConfig, StartUpConfig
 from fastapi.middleware.cors import CORSMiddleware
+
+url = 'http://localhost:5000'
 
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
     "http://localhost",
-    "http://localhost:4200"],
+    "http://localhost:4200",
+    url
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-templates = Jinja2Templates(directory="templates")
 
 controller = Controller()
 
@@ -25,15 +27,32 @@ controller = Controller()
 
 @app.get('/')
 def index(request: Request):
-    return templates.TemplateResponse("index.html", context={"request": request})
+    return {}
 
 @app.post('/start')
 def start(config:StartUpConfig):
     
         controller.start(config)
         return {
-                    "stream":'http://localhost:5000/video_feed'
+                    "stream":url+'/video_feed'
                   }
+@app.post("/fstart")
+def fstart(video: UploadFile = File(...),clip_size: int= Form(),threshold: int = Form(),memory: int = Form()):
+    try:
+        contents = video.file.read()
+        with open("tmp.mp4", 'wb') as f:
+            f.write(contents)
+    except Exception:
+        return {"message": f"There was an error opening {video.filename}"}
+    finally:
+        video.file.close()
+    
+    config = StartUpConfig(source='tmp.mp4',
+                           modelConfig=ModelConfig(clip_size=clip_size,memory=memory,threshold=threshold))   
+    controller.start(config)
+    
+    return { "stream":url+'/video_feed' }
+        
 @app.get('/end')
 def end():
         controller.end()
@@ -49,6 +68,11 @@ def modelConfig():
 def delay():
         return {
                 "delay":controller.streaming_delay
+                }
+@app.get('/fps')
+def fps():
+        return {
+                "frame_rate":controller.frame_rate
                 }
             
 @app.get('/video_feed')

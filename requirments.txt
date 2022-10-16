@@ -1,0 +1,8 @@
+tensorflow==2.10.0
+keras==2.10.0
+opencv-python==4.6.0.66
+fastapi==0.85.1
+uvicorn==0.18.3
+python-multipart
+
+
