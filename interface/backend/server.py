@@ -3,6 +3,8 @@ from fastapi.responses import StreamingResponse
 from fastapi import Request
 from interface.backend.controller import Controller, ModelConfig, StartUpConfig
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 url = 'http://localhost:5000'
 
@@ -19,15 +21,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+app.mount("/app", StaticFiles(directory="interface/frontend/"), name="frontend")
+t = Jinja2Templates(directory="interface/frontend")
 
 controller = Controller()
 
 
-
 @app.get('/')
 def index(request: Request):
-    return {}
+    return t.TemplateResponse("index.html",{"request":request})
 
 @app.post('/start')
 def start(config:StartUpConfig):
