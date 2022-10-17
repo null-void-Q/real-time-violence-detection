@@ -21,13 +21,11 @@ run the demo:
 after the local server is up head to [localhost:5000](localhost:5000 "localhost:5000") in your browser to use the web interface. (included test_video.mp4)
 
 
-[========]
 
-[========]
 
 [![INterface](https://user-images.githubusercontent.com/53970206/196257994-be5d8a86-3365-4d87-b5c7-dd7a1eeb8122.png "INterface")](http://https://user-images.githubusercontent.com/53970206/196257994-be5d8a86-3365-4d87-b5c7-dd7a1eeb8122.png "INterface")
 
-[========]
+
 
 
 [![Interface](https://user-images.githubusercontent.com/53970206/196257986-a392c2bc-8764-4747-83f0-28838d232a6b.png "Interface")](https://user-images.githubusercontent.com/53970206/196257986-a392c2bc-8764-4747-83f0-28838d232a6b.png "Interface")
