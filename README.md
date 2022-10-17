@@ -11,21 +11,21 @@ Accuracy       | Precision | Recall
 ## Running the code
 the code was tested on an nvidia GPU with cudnn drivers, it might not run properly on cpu .
 ####  Commands
-clone the repository:
-`git clone https://github.com/null-void-Q/real-time-violence-detection.git`
-install requirments:
-`pip install -r requirments.txt`
-run the demo:
-`python main.py`
+clone the repository:<br/>
+`git clone https://github.com/null-void-Q/real-time-violence-detection.git`<br/>
+install requirments:<br/>
+`pip install -r requirments.txt`<br/>
+run the demo:<br/>
+`python main.py`<br/>
 
 after the local server is up head to [localhost:5000](localhost:5000 "localhost:5000") in your browser to use the web interface. (included test_video.mp4)
 
 
-
+<br/>
 
 [![INterface](https://user-images.githubusercontent.com/53970206/196257994-be5d8a86-3365-4d87-b5c7-dd7a1eeb8122.png "INterface")](http://https://user-images.githubusercontent.com/53970206/196257994-be5d8a86-3365-4d87-b5c7-dd7a1eeb8122.png "INterface")
 
-
+<br/>
 
 
 [![Interface](https://user-images.githubusercontent.com/53970206/196257986-a392c2bc-8764-4747-83f0-28838d232a6b.png "Interface")](https://user-images.githubusercontent.com/53970206/196257986-a392c2bc-8764-4747-83f0-28838d232a6b.png "Interface")
