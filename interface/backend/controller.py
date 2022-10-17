@@ -60,10 +60,9 @@ class Controller():
             
             label = self.model.classify(clip)
             
-            self.preformanceTimer.record()
-            
             self.output_pipe.read_output(clip,label)
             
+            self.preformanceTimer.record()
             self.frame_rate = self.preformanceTimer.framerate(self.model.clip_size)
             
             #calculate required delay before streaming / depends on machine preformance
@@ -72,7 +71,7 @@ class Controller():
                 
                 # start streaming classified frames
                 self.output_pipe.start_after_delay(self.streaming_delay)    
-        
+                     
         self.output_pipe.end()
         self.video_capture.end_capture_thread()
         self.delTmpVideo()
