@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-url = 'http://localhost:5000'
+url = 'http://localhost:5006'
 
 app = FastAPI()
 app.add_middleware(
