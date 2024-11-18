@@ -1,12 +1,12 @@
 """Inception-v1 Inflated 3D ConvNet used for Kinetics CVPR paper.
- 
+
 The model is introduced in:
- 
+
 Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset
 Joao Carreira, Andrew Zisserman
 https://arxiv.org/abs/1705.07750v1
 """
-        
+
 from __future__ import print_function
 from __future__ import absolute_import
 
@@ -28,10 +28,9 @@ from keras.layers import Reshape
 from keras.layers import Lambda
 from keras.layers import GlobalAveragePooling3D
 
-from keras.utils.layer_utils import get_source_inputs
-from keras.utils import layer_utils
-from keras.utils.data_utils import get_file
+from keras.utils import get_file
 from keras import backend as K
+import tensorflow as tf
 
 WEIGHTS_NAME = ['rgb_inception_i3d', 'flow_inception_i3d','v_inception_i3d']
 
@@ -186,7 +185,7 @@ def conv3d_bn(x,
         num_col: width of the convolution kernel.
         padding: padding mode in `Conv3D`.
         strides: strides in `Conv3D`.
-        use_bias: use bias or not  
+        use_bias: use bias or not
         use_activation_fn: use an activation function or not.
         use_bn: use batch normalization or not.
         name: name of the ops; will become `name + '_conv'`
@@ -244,7 +243,7 @@ def Inception_Inflated3d(include_top=True,
     Note that the default input frame(image) size for this model is 224x224.
 
     # Arguments
-        include_top: whether to include the the classification 
+        include_top: whether to include the the classification
             layer at the top of the network.
         weights: one of `None` (random initialization)
             or 'kinetics' (pre-training on Kinetics dataset and imagenet).
@@ -260,13 +259,13 @@ def Inception_Inflated3d(include_top=True,
             Also, Width and height should be no smaller than 32.
             E.g. `(64, 150, 150, 3)` would be one valid value.
         dropout_prob: optional, dropout probability applied in dropout layer
-            after global average pooling layer. 
+            after global average pooling layer.
             0.0 means no dropout is applied, 1.0 means dropout is applied to all features.
             Note: Since Dropout is applied just before the classification
             layer, it is only useful when `include_top` is set to True.
         endpoint_logit: (boolean) optional. If True, the model's forward pass
             will end at producing logits. Otherwise, softmax is applied after producing
-            the logits to produce the class probabilities prediction. Setting this parameter 
+            the logits to produce the class probabilities prediction. Setting this parameter
             to True is particularly useful when you want to combine results of rgb model
             and optical flow model.
             - `True` end model forward pass at logit output
@@ -284,11 +283,11 @@ def Inception_Inflated3d(include_top=True,
             or invalid input shape.
     """
     if weights == WEIGHTS_NAME[2] and not include_top:
-        raise ValueError('The Violence model cant be instatiated without top')        
+        raise ValueError('The Violence model cant be instatiated without top')
     if not (weights in WEIGHTS_NAME or weights is None or os.path.exists(weights)):
         raise ValueError('The `weights` argument should be either '
-                         '`None` (random initialization) or %s' % 
-                         str(WEIGHTS_NAME) + ' ' 
+                         '`None` (random initialization) or %s' %
+                         str(WEIGHTS_NAME) + ' '
                          'or a valid path to a file containing `weights` values')
 
     if weights in WEIGHTS_NAME and include_top and (classes != 400 and classes != 2):
@@ -298,8 +297,8 @@ def Inception_Inflated3d(include_top=True,
     # Determine proper input shape
     input_shape = _obtain_input_shape(
         input_shape,
-        default_frame_size=224, 
-        min_frame_size=32, 
+        default_frame_size=224,
+        min_frame_size=32,
         default_num_frames=64,
         min_num_frames=8,
         data_format=K.image_data_format(),
@@ -487,14 +486,14 @@ def Inception_Inflated3d(include_top=True,
         x = AveragePooling3D((2, 7, 7), strides=(1, 1, 1), padding='valid')(x)
         x = Dropout(dropout_prob)(x)
 
-        x = conv3d_bn(x, classes, 1, 1, 1, padding='same', 
+        x = conv3d_bn(x, classes, 1, 1, 1, padding='same',
                 use_bias=True, use_activation_fn=False, use_bn=False)
- 
+
         num_frames_remaining = int(x.shape[1])
         x = Reshape((num_frames_remaining, classes))(x)
 
         # logits (raw scores for each class)
-        x = Lambda(lambda x: K.mean(x, axis=1, keepdims=False),
+        x = Lambda(lambda x: tf.math.reduce_mean(x, axis=1, keepdims=False),
                    output_shape=lambda s: (s[0], s[2]))(x)
 
         if not endpoint_logit:
@@ -528,15 +527,12 @@ def Inception_Inflated3d(include_top=True,
                 weights_url = WEIGHTS_PATH_NO_TOP['flow_inception_i3d']
                 model_name = 'i3d_inception_flow_no_top.h5'
         elif weights == WEIGHTS_NAME[2]: # violence_model
-            
+
             weights_url = WEIGHTS_PATH['v_inception_i3d']
-            model_name = 'v_inception_i3d.h5'               
+            model_name = 'v_inception_i3d.h5'
 
         downloaded_weights_path = get_file(model_name, weights_url, cache_subdir='models')
         model.load_weights(downloaded_weights_path)
-
-        if K.backend() == 'theano':
-            layer_utils.convert_all_kernels_in_model(model)
 
         if K.image_data_format() == 'channels_first' and K.backend() == 'tensorflow':
             warnings.warn('You are using the TensorFlow backend, yet you '
