@@ -19,6 +19,7 @@ A lightweight demo that uses a **DeepMind [Kinetics‑I3D](https://github.com/de
 </div>
 
 ## Running the Code
+
 > [!WARNING]
 > Tested on NVIDIA GPUs with CUDA support, CPU performance is not fully optimized or thoroughly tested.
 
