@@ -20,7 +20,7 @@ A lightweight demo that uses a **DeepMind [Kinetics‑I3D](https://github.com/de
 
 ## Running the Code
 > [!WARNING]
-> Tested on NVIDIA GPUs with CUDA support,CPU performance is not fully optimized or thoroughly tested.
+> Tested on NVIDIA GPUs with CUDA support, CPU performance is not fully optimized or thoroughly tested.
 
 > [!NOTE]
 > The browser will block access to the webcam unless the project is accessed via localhost or 127.0.0.1.
