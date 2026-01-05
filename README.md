@@ -13,7 +13,7 @@ A lightweight demo that uses a **DeepMind [Kinetics‑I3D](https://github.com/de
 *Note:* The model is built on an older checkpoint and a private dataset with limited diversity and size, so treat it as a proof-of-concept only. Use it to explore the workflow or as a baseline for further research.
 
 <div align="center">
-  <a href="https://user-images.githubusercontent.com/53970206/196257986-a392c2bc-8764-4747-83f0-28838d232a6b.png">
+  <a href="https://github.com/user-attachments/assets/dd25bdec-b188-4eb7-a1fe-5cc70b280389">
     <img src="https://github.com/user-attachments/assets/dd25bdec-b188-4eb7-a1fe-5cc70b280389" alt="Interface" width="800">
   </a>
 </div>
