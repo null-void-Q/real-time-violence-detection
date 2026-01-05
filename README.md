@@ -1,4 +1,5 @@
 ## 📽️ Violence Detection Demo
+
 [![GitHub stars](https://img.shields.io/github/stars/null-void-Q/real-time-violence-detection.svg?style=social)](https://github.com/null-void-Q/real-time-violence-detection/stargazers)  
 [![Python version](https://img.shields.io/badge/python-3.13%2B-brightgreen.svg)](https://www.python.org/downloads/)  
 [![Gradio](https://img.shields.io/badge/Powered%20by-Gradio-orange.svg)](https://gradio.app)
