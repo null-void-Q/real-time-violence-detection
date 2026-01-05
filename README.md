@@ -98,3 +98,7 @@ The application will start on:
 > Head to [localhost:7860](http://127.0.0.1:7860) in your browser to use the web interface
 
 ---
+## TODO
+- ☐ Improve accuracy of measured processing metrics
+- ☐ Clarify Hardware requirements and expected performance
+- ☐ Improve model performance across diverse contexts
