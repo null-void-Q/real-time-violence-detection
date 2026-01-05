@@ -1,7 +1,0 @@
-tensorflow[and-cuda]~=2.18.0
-keras~=3.6.0
-opencv-python~=4.10.0
-fastapi
-uvicorn
-python-multipart
-jinja2

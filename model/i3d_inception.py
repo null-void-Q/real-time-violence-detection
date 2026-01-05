@@ -36,15 +36,15 @@ WEIGHTS_NAME = ['rgb_inception_i3d', 'flow_inception_i3d','v_inception_i3d']
 
 # path to pretrained models with top (classification layer)
 WEIGHTS_PATH = {
-    'rgb_inception_i3d': 'https://drive.google.com/uc?export=download&id=1JnqeLIM1izoccgz60fQJSWxuI00nf0_N',
-    'flow_inception_i3d' : 'https://drive.google.com/uc?export=download&id=1YTik34v8jgPoN4UAF0k-g1rIqvwzuWrr',
-    'v_inception_i3d':'https://drive.google.com/uc?export=download&id=1U9D0I8_CEcdLeupSYr7sdIZqVDxIFaZ6',
+    'rgb_inception_i3d': 'unsupported',
+    'flow_inception_i3d' : 'unsupported',
+    'v_inception_i3d':'https://huggingface.co/nvdq/v_inception_i3d.h5/resolve/main/v_inception_i3d.h5',
 }
 
 # path to pretrained models with no top (no classification layer)
 WEIGHTS_PATH_NO_TOP = {
-    'rgb_inception_i3d': 'https://drive.google.com/uc?export=download&id=1l9GCEXncV8Izp905g6U-FMw01KKwLYga',
-    'flow_inception_i3d' : 'https://drive.google.com/uc?export=download&id=1nRzNQYMgmPfv6OyYVBh10wa9rOEqwnfs'
+    'rgb_inception_i3d': 'unsupported',
+    'flow_inception_i3d' : 'unsupported'
 }
 
 
