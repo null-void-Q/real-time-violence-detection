@@ -1,0 +1,11 @@
+services:
+  rtvd-app-cpu:
+    build: .
+    command: python app.py
+    ports:
+      - "7860:7860"
+    volumes:
+      - models:/root/.keras/models
+
+volumes:
+  models:
