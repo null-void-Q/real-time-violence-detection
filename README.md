@@ -28,7 +28,7 @@ A lightweight demo that uses a **DeepMind [Kinetics‑I3D](https://github.com/de
 
 ### Docker
 #### Prerequisites
-- ✅ [Docker](https://docs.docker.com/get-docker/) installed
+- ✅ [Docker](https://docs.docker.com/get-docker/)  and Docker Compose installed
 - ✅ [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) for GPU support
 
 1. Clone the Repository
@@ -38,12 +38,13 @@ cd real-time-violence-detection
 ```
 
 2. Build and Run with Docker Compose
+> with GPU support
 ```bash
 docker compose up
 ```
-or
+> for CPU
 ```bash
-docker-compose up
+docker compose -f docker-compose-cpu.yml up
 ```
 
 The application will start on:
@@ -70,14 +71,17 @@ cd real-time-violence-detection
 ```bash
 # Create a virtual environment named 'venv'
 python -m venv venv
-
-# Activate it:
-# On Windows:
-venv\Scripts\activate
-
-# On macOS/Linux:
+```
+```bash
+# Activate it
+# On Linux/macOS:
 source venv/bin/activate
 ```
+```bash
+# On Windows:
+venv\Scripts\activate
+```
+
 
 3. Install Dependencies
 Install all required packages from `requirements.txt`:
